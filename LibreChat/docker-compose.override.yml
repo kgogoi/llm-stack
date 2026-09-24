@@ -1,0 +1,24 @@
+services:
+  api:
+    volumes:
+      - type: bind
+        source: ./librechat.yaml
+        target: /app/librechat.yaml
+    environment:
+      LITELLM_API_KEY: ${LITELLM_API_KEY}
+
+  searxng:
+    container_name: searxng
+    image: searxng/searxng:latest
+    restart: always
+    volumes:
+      - ./searxng:/etc/searxng
+    environment:
+      - SEARXNG_BASE_URL=http://searxng:8080/
+    networks:
+      - default
+
+networks:
+  default:
+    name: llm-network
+    external: true

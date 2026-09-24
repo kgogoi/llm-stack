@@ -1,0 +1,18 @@
+[Unit]
+Description=llm-stack Enterprise AI Platform (LiteLLM + LibreChat + SearXNG)
+After=docker.service network-online.target
+Requires=docker.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+# Adjust this WorkingDirectory to match the path on your target server (e.g., /opt/llm-stack)
+WorkingDirectory=/opt/llm-stack
+ExecStart=/opt/llm-stack/llm-stack.sh start
+ExecStop=/opt/llm-stack/llm-stack.sh stop
+TimeoutStartSec=300
+TimeoutStopSec=120
+
+[Install]
+WantedBy=multi-user.target

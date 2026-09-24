@@ -1,0 +1,33 @@
+use_default_settings: true
+
+server:
+  secret_key: "llm_stack_secure_searxng_secret_token_2026"
+  bind_address: "0.0.0.0"
+  port: 8080
+  limiter: false
+  image_proxy: false
+
+search:
+  safe_search: 0
+  autocomplete: ""
+  formats:
+    - html
+    - json
+
+engines:
+  - name: google
+    engine: google
+    shortcut: g
+    timeout: 3.0
+  - name: bing
+    engine: bing
+    shortcut: b
+    timeout: 3.0
+  - name: duckduckgo
+    engine: duckduckgo
+    shortcut: ddg
+    timeout: 3.0
+  - name: startpage
+    engine: startpage
+    shortcut: sp
+    timeout: 3.0

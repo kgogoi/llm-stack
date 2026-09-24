@@ -1,0 +1,30 @@
+# Databases and runtime volume directories
+**/data-node/
+**/meili_data*/
+**/pgdata*/
+**/postgres_data/
+**/backups/
+**/logs/
+**/uploads/
+**/images/
+**/skill/
+
+# Environment secrets and active configs
+.env
+*.env
+!.env.example
+!*.env.example
+Litellm/.env
+LibreChat/.env
+
+# Large model weights (use ./download-model.sh instead)
+granite-model/*.safetensors
+granite-model/*.bin
+!granite-model/.gitkeep
+
+# Temporary files
+*.tmp
+*.bak
+*~
+.DS_Store
+Thumbs.db

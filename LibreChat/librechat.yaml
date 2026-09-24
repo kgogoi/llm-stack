@@ -1,0 +1,93 @@
+version: 1.1.2
+
+cache: true
+
+interface:
+  agents:
+    use: true
+    create: true
+    share: true
+    public: true
+  sharedLinks:
+    create: true
+    share: true
+    public: true
+
+webSearch:
+  searchProvider: "searxng"
+  searxngInstanceUrl: "http://searxng:8080"
+  scraperProvider: "keenable"
+  rerankerType: "none"
+  allowedAddresses:
+    - "searxng:8080"
+  searxngSearchOptions:
+    engines:
+      - google
+      - bing
+      - startpage
+      - duckduckgo
+    language: "en"
+    timeout: 10000
+
+modelSpecs:
+  enforce: true
+  prioritize: true
+  list:
+    - name: "agent-tier-low"
+      label: "Agent (Low / Fast)"
+      description: "Cost-effective, rapid assistant for routine queries and summaries"
+      default: true
+      preset:
+        endpoint: "agents"
+        agent_id: "agent_tier_low"
+
+    - name: "agent-tier-medium"
+      label: "Agent (Medium / Balanced)"
+      description: "Balanced reasoning for technical documentation and code analysis"
+      preset:
+        endpoint: "agents"
+        agent_id: "agent_tier_med"
+
+    - name: "agent-tier-high"
+      label: "Agent (High / Frontier)"
+      description: "Frontier reasoning engine for complex multi-step technical planning"
+      preset:
+        endpoint: "agents"
+        agent_id: "agent_tier_high"
+
+endpoints:
+  agents:
+    disableBuilder: false
+    capabilities: [
+      "file_search",
+      "web_search",
+      "context",
+      "actions",
+      "tools",
+      "artifacts",
+      "memory"
+    ]
+    maxRecursionLimit: 25
+  custom:
+    - name: "LiteLLM"
+      apiKey: "${LITELLM_API_KEY}"
+      baseURL: "http://litellm_api:4000/v1"
+      models:
+        default:
+          - "tier-1-economy"
+          - "tier-2-workhorse"
+          - "tier-3-sota"
+        fetch: false
+      titleConvo: true
+      titleModel: "tier-1-economy"
+      modelDisplayLabel: "LLM Stack Engine"
+
+fileConfig:
+  endpoints:
+    agents:
+      fileLimit: 50
+      fileSizeLimit: 100
+      totalSizeLimit: 1000
+    custom:
+      fileLimit: 10
+      fileSizeLimit: 50

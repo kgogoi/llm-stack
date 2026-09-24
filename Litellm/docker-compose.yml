@@ -1,0 +1,65 @@
+services:
+  granite_embedding:
+    container_name: granite_embedding
+    build:
+      context: ./granite-embedding
+      dockerfile: Dockerfile
+    image: granite-embedding:latest
+    restart: always
+    ports:
+      - "${GRANITE_PORT:-8080}:80"
+    volumes:
+      - ../granite-model:/model:ro
+      - ./granite-embedding/app.py:/app/app.py
+    networks:
+      - llm-network
+
+  litellm:
+    container_name: litellm_api
+    image: docker.litellm.ai/berriai/litellm:latest
+    restart: always
+    ports:
+      - "${LITELLM_PORT:-4000}:4000"
+    volumes:
+      - ./litellm_config.yaml:/app/config.yaml
+    command: ["--config", "/app/config.yaml"]
+    environment:
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY}
+      LITELLM_SALT_KEY: ${LITELLM_SALT_KEY}
+      DATABASE_URL: postgresql://litellm:${LITELLM_DB_PASSWORD:-litellm}@db:5432/litellm
+      STORE_MODEL_IN_DB: "True"
+    env_file:
+      - path: .env
+        required: false
+    depends_on:
+      db:
+        condition: service_healthy
+      granite_embedding:
+        condition: service_started
+    networks:
+      - llm-network
+
+  db:
+    container_name: litellm_db
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: litellm
+      POSTGRES_PASSWORD: ${LITELLM_DB_PASSWORD:-litellm}
+      POSTGRES_DB: litellm
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U litellm"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - llm-network
+
+volumes:
+  postgres_data:
+
+networks:
+  llm-network:
+    external: true
